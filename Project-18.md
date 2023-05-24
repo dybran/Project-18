@@ -52,7 +52,7 @@ provider "aws" {
 ```
 ![](./images/prov.PNG)
 
-NExt we will create a __vars.tf__ file in each folder in the __modules__
+Next we will create a __vars.tf__ file in each folder in the __modules__
 
 ![](./images/ras.PNG)
 
