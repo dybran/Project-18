@@ -1,6 +1,6 @@
 # terraform {
 #   backend "s3" {
-#     bucket         = "pbl-test-18"
+#     bucket         = "narbyd-dev-terraform-bucket"
 #     key            = "global/s3/terraform.tfstate"
 #     region         = "us-east-1"
 #     dynamodb_table = "terraform-locks"
@@ -8,12 +8,12 @@
 #   }
 # }
 
-terraform {
-  cloud {
-    organization = "pisitis"
+# terraform {
+#   cloud {
+#     organization = "Dybran"
 
-    workspaces {
-      name = "terraform-aws-cloud"
-    }
-  }
-}
+#     workspaces {
+#       name = "terraform-aws-cloud"
+#     }
+#   }
+# }
