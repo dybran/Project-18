@@ -37,8 +37,6 @@ Copy the files containing the resources that was created in __PROJECT-17__ into 
 
 ![](./images/22.PNG)
 
-
-
 In the __root-module__ create a file __main.tf__ and a __provider.tf__ file.
 
 ![](./images/mp.PNG)
@@ -56,3 +54,142 @@ Next we will create a __vars.tf__ file in each folder in the __modules__
 
 ![](./images/ras.PNG)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The steps to Re-initialize Terraform to use S3 backend:
+
+- Add S3 and DynamoDB resource blocks before deleting the local state file
+- Update terraform block to introduce backend and locking
+- Re-initialize terraform
+- Delete the local tfstate file and check the one in S3 bucket
+- Add outputs
+- terraform apply
+
+Create a file and name it __backend.tf__. Add the below code and replace the name of the S3 bucket we created earlier.
+
+```
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "narbyd-dev-terraform-bucket"
+  # Enable versioning so we can see the full revision history of our state files
+  versioning {
+    enabled = true
+  }
+  # Enable server-side encryption by default
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+```
+![](./images/bknd.PNG)
+
+Terraform stores Passwords and secret keys processed by resources in the state files. Hence, we should enable encryption with __server_side_encryption_configuration__ in the above code.
+
+Next, we will create a__ DynamoDB__ table to handle locks and perform consistency checks. In previous projects, locks were handled with a local file as shown in __terraform.tfstate.lock.info__. Since we now have a team mindset, causing us to configure S3 as our backend to store state file, we will do the same to handle locking. Therefore we will use a cloud storage database like DynamoDB so that anyone running Terraform against the same infrastructure can use a central location to control a situation where Terraform is running at the same time from multiple different people.
+
+Dynamo DB resource for locking and consistency checking:
+
+```
+resource "aws_dynamodb_table" "terraform_locks" {
+  name         = "terraform-locks"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+```
+![](./images/dy.PNG)
+
+Terraform expects that both S3 bucket and DynamoDB resources are already created before we configure the backend. So, let us run terraform apply to provision resources.
+
+Configure S3 Backend
+
+```
+terraform {
+  backend "s3" {
+    bucket         = "narbyd-dev-terraform-bucket"
+    key            = "global/s3/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+```
+![](./images/dy2.PNG)
+
+Run 
+
+`$ terraform init`
+
+Confirm you are happy to change the backend by typing __yes__
