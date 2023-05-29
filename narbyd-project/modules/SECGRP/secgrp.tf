@@ -3,26 +3,26 @@ locals {
   security_groups = {
     ext-alb-sg = {
       name        = "ext-alb-sg"
-      description = "for external loadbalncer"
+      description = "external loadbalncer security group"
 
     }
 
     # security group for bastion
     bastion-sg = {
       name        = "bastion-sg"
-      description = "for bastion instances"
+      description = "bastion security group"
     }
 
     # security group for nginx
     nginx-sg = {
       name        = "nginx-sg"
-      description = "nginx instances"
+      description = "nginx security group"
     }
 
     # security group for IALB
     int-alb-sg = {
       name        = "int-alb-sg"
-      description = "IALB security group"
+      description = "internal loadbalancer security group"
     }
 
 
@@ -36,7 +36,7 @@ locals {
     # security group for data-layer
     datalayer-sg = {
       name        = "datalayer-sg"
-      description = "data layer security group"
+      description = "datalayer security group"
     }
     
     compute-sg = {

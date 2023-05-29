@@ -35,6 +35,8 @@ In the __root-module__ create a file __main.tf__, __provider.tf__, __terraform.t
 
 __The refactored code can be found [here](https://github.com/dybran/Project-18/tree/main/narbyd-project).__
 
+The __main.tf__ in the root module uses the __output.tf__ files to create the resources for the infrastructure.
+
 Then run the commands
 
 `$ terraform init`
@@ -46,9 +48,28 @@ Then run the commands
 
 ![](./images/sf.PNG)
 ![](./images/tev.PNG)
+
+Run `$ terraform plan` to see the plan on the actions to be taken.
+
 ![](./images/pl2.PNG)
 
+If we are ok with the actions to be taken we run 
 
+`$ terraform apply`
+
+![](./images/apy.PNG)
+![](./images/1222.PNG)
+
+
+Below are some of the resources created
+
+![](./images/asg.PNG)
+![](./images/ig.PNG)
+![](./images/inst.PNG)
+![](./images/lb.PNG)
+![](./images/sg.PNG)
+![](./images/sub.PNG)
+![](./images/tgt.PNG)
 
 
 
