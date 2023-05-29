@@ -218,4 +218,6 @@ To use our new setup, we uncomment the backend configurations and run
 
 This configures terraform to use the backend.
 
-__N/B:__ To upload the __terraform.tfstate__ and the __lock__ file to the S3 bucket and dynomoDB table, we run `terraform init` after provisioning the other resources. 
+__N/B:__ To upload the __terraform.tfstate__ and the __lock__ file to the S3 bucket and dynomoDB table, we run `terraform init` after provisioning the other resources.
+
+We have successfully refactored the code to use __modules__, configured the __S3 bucket__ and the __DynamoDB__ to hold the __terraform.tfstate__ file and __lock__ files respectively.  
