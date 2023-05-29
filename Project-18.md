@@ -1,21 +1,13 @@
 ## __USING TERRAFORM IAC TOOL TO AUTOMATE AWS CLOUD SOLUTION FOR 2 COMPANY WEBSITES (REFACTORING) - CONTINUATION__
 
-In two previous projects you have developed AWS Infrastructure code using Terraform and tried to run it from our local workstation.
-Now it is time to introduce some more advanced concepts and enhance the code.
+In two previous projects, we developed AWS Infrastructure code using Terraform and tried to run it from our local workstation.
+In this project,we will introduce some more advanced concepts and enhance the code.
 
-Firstly, we will explore alternative Terraform __backends__. A backend defines where Terraform stores its state data files - __terraform.tfstate__ file.
+We will explore alternative Terraform __backends__. A backend defines where Terraform stores its state data files - __terraform.tfstate__ file.
 
 Terraform uses persisted state data to keep track of the resources it manages. Most non-trivial Terraform configurations either integrate with Terraform Cloud or use a backend to store state remotely. This lets multiple people access the state data and work together on that collection of infrastructure resources.
 
-## __Introducing Backend on S3__
-
-So far in this project, we have been using the default backend which is the local backend – it requires no configuration and the states file is stored locally. This mode is not a robust solution, so it is better to store it in some more reliable and durable storage.
-
-The problem with storing this file locally is that, in a team of multiple DevOps engineers, other engineers will not have access to a state file stored locally on your computer.
-
-To solve this, we will need to configure a backend where the state file can be accessed remotely by other DevOps team members. There are plenty of different standard backends supported by Terraform that you can choose from. Since we are already using AWS – we can choose an __S3 bucket__ as a backend.
-
-Another useful option that is supported by S3 backend is [State Locking](https://developer.hashicorp.com/terraform/language/state/locking) – it is used to lock your state file for all operations that could write state. This prevents others from acquiring the lock and potentially corrupting your state. State Locking feature for S3 backend is optional and requires another AWS service – [DynamoDB](https://aws.amazon.com/dynamodb).
+### __REFACTORING THE CODE USING MODULES__
 
 We will be refactoring our codes to use __modules__ and move the __terraform.tfstate__ file to the __S3 bucket__ in the cloud.
 
@@ -71,77 +63,17 @@ Below are some of the resources created
 ![](./images/sub.PNG)
 ![](./images/tgt.PNG)
 
+## __Introducing Backend on S3__
 
+So far in this project, we have been using the default backend which is the local backend – it requires no configuration and the states file is stored locally. This mode is not a robust solution, so it is better to store it in some more reliable and durable storage.
 
+The problem with storing this file locally is that, in a team of multiple DevOps engineers, other engineers will not have access to a state file stored locally on your computer.
 
+To solve this, we will need to configure a backend where the state file can be accessed remotely by other DevOps team members. There are plenty of different standard backends supported by Terraform that you can choose from. Since we are already using AWS – we can choose an __S3 bucket__ as a backend.
 
+Another useful option that is supported by S3 backend is [State Locking](https://developer.hashicorp.com/terraform/language/state/locking) – it is used to lock your state file for all operations that could write state. This prevents others from acquiring the lock and potentially corrupting your state. State Locking feature for S3 backend is optional and requires another AWS service – [DynamoDB](https://aws.amazon.com/dynamodb).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Setting up the S3 bucket 
 
 The steps to Re-initialize Terraform to use S3 backend:
 
@@ -152,7 +84,7 @@ The steps to Re-initialize Terraform to use S3 backend:
 - Add outputs
 - terraform apply
 
-Create a file and name it __backend.tf__. Add the below code and replace the name of the S3 bucket we created earlier.
+Add the below code to the ___main.tf__ file in the __root module__ 
 
 ```
 resource "aws_s3_bucket" "terraform_state" {
@@ -171,17 +103,16 @@ resource "aws_s3_bucket" "terraform_state" {
   }
 }
 ```
-![](./images/bknd.PNG)
 
 Terraform stores Passwords and secret keys processed by resources in the state files. Hence, we should enable encryption with __server_side_encryption_configuration__ in the above code.
 
-Next, we will create a__ DynamoDB__ table to handle locks and perform consistency checks. In previous projects, locks were handled with a local file as shown in __terraform.tfstate.lock.info__. Since we now have a team mindset, causing us to configure S3 as our backend to store state file, we will do the same to handle locking. Therefore we will use a cloud storage database like DynamoDB so that anyone running Terraform against the same infrastructure can use a central location to control a situation where Terraform is running at the same time from multiple different people.
+Next, we will create a __DynamoDB__ table to handle locks and perform consistency checks. In previous projects, locks were handled with a local file as shown in __terraform.tfstate.lock.info__. Since we now have a team mindset, causing us to configure S3 as our backend to store state file, we will do the same to handle locking. Therefore we will use a cloud storage database like DynamoDB so that anyone running Terraform against the same infrastructure can use a central location to control a situation where Terraform is running at the same time from multiple different people.
 
 Dynamo DB resource for locking and consistency checking:
 
 ```
 resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "terraform-locks"
+  name         = "narbyd-terraform-locks"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
   attribute {
@@ -190,11 +121,21 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 }
 ```
-![](./images/dy.PNG)
+![](./images/qaa.PNG)
 
 Terraform expects that both S3 bucket and DynamoDB resources are already created before we configure the backend. So, let us run terraform apply to provision resources.
 
-Configure S3 Backend
+The S3 bucket we created earlier in the project
+
+![](./images/ss3.PNG)
+
+Create the __dynamoDB table__
+
+![](./images/dynamo.PNG)
+![](./images/dynamo2.PNG)
+
+
+Configure S3 Backend by adding the code snippet to __backend.tf__
 
 ```
 terraform {
@@ -207,10 +148,74 @@ terraform {
   }
 }
 ```
-![](./images/dy2.PNG)
 
 Run 
 
 `$ terraform init`
 
-Confirm you are happy to change the backend by typing __yes__
+Confirm you are OK to change the backend by typing __yes__
+
+![](./images/reiniti.PNG)
+
+Verify the changes __terraform.tfstate__ file is now inside the S3 bucket.
+
+![](./images/tfst.PNG)
+
+DynamoDB table which we created has an entry which includes state file status.
+
+Navigate to the DynamoDB table inside AWS and leave the page open in your browser. 
+
+Run
+
+`$ terraform plan`
+
+![](./images/lan.PNG)
+
+While that is running, refresh the browser and see how the lock is being handled.
+
+![](./images/dylok.PNG)
+
+After terraform plan completes, refresh DynamoDB table to see that the ID disappears after the `terraform plan` is completed.
+
+![](./images/dyl.PNG)
+
+Add Terraform Output
+
+Before you run `terraform apply` let us add an output so that the S3 bucket Amazon Resource Names ARN and DynamoDB table name can be displayed.
+
+Create a new file and name it __output.tf__ and add below code
+
+```
+output "s3_bucket_arn" {
+  value       = aws_s3_bucket.terraform_state.arn
+  description = "The ARN of the S3 bucket"
+}
+output "dynamodb_table_name" {
+  value       = aws_dynamodb_table.terraform_locks.name
+  description = "The name of the DynamoDB table"
+}
+```
+
+Then run `terraform apply`
+
+
+Before we run the `$ terraform destroy` command, we need to comment out the backend configurations and run 
+
+`$ terraform init -migrate-state` 
+
+to restore the former state of the __terraform.tfstate__ file.
+
+![](./images/mig.PNG)
+
+
+Then we run `terraform destroy`
+
+To use our new setup, we uncomment the backend configurations and run
+
+`$ terraform init`
+
+![](./images/ninit.PNG)
+
+This configures terraform to use the backend.
+
+__N/B:__ To upload the __terraform.tfstate__ and the __lock__ file to the S3 bucket and dynomoDB table, we run `terraform init` after provisioning the other resources. 
