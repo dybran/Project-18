@@ -1,9 +1,9 @@
-output "ext-ALB-sg" {
+output "ext-alb-sg" {
   value = aws_security_group.narbyd["ext-alb-sg"].id
 }
 
 
-output "Int-ALB-sg" {
+output "int-alb-sg" {
   value = aws_security_group.narbyd["int-alb-sg"].id
 }
 
@@ -24,7 +24,7 @@ output "web-sg" {
 
 
 output "datalayer-sg" {
-  value = aws_security_group.naryd["datalayer-sg"].id
+  value = aws_security_group.narbyd["datalayer-sg"].id
 }
 
 output "compute-sg" {

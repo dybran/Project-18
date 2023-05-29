@@ -18,9 +18,9 @@ variable "enable_classiclink" {
   default = "false"
 }
 
-variable "enable_classiclink_dns_support" {
-  default = "false"
-}
+# variable "enable_classiclink_dns_support" {
+#   default = "false"
+# }
 
 variable "preferred_number_of_public_subnets" {
   type        = number

@@ -1,32 +1,32 @@
-#############################
-##creating bucket for s3 backend
-#########################
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "narbyd-dev-terraform-bucket"
+# #############################
+# ##creating bucket for s3 backend
+# #########################
+# resource "aws_s3_bucket" "terraform_state" {
+#   bucket = "narbyd-dev-terraform-bucket"
 
-  versioning {
-    enabled = true
-  }
-  force_destroy = true
+#   versioning {
+#     enabled = true
+#   }
+#   force_destroy = true
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
+#   server_side_encryption_configuration {
+#     rule {
+#       apply_server_side_encryption_by_default {
+#         sse_algorithm = "AES256"
+#       }
+#     }
+#   }
+# }
 
-resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "terraform-locks"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
+# resource "aws_dynamodb_table" "terraform_locks" {
+#   name         = "terraform-locks"
+#   billing_mode = "PAY_PER_REQUEST"
+#   hash_key     = "LockID"
+#   attribute {
+#     name = "LockID"
+#     type = "S"
+#   }
+# }
 
 
 # creating VPC
@@ -49,8 +49,8 @@ module "ALB" {
   extLB-name         = "narbyd-ext-lb"
   intLB-name         = "narbyd-int-lb"
   vpc_id             = module.VPC.vpc_id
-  public-sg          = module.SECGRP.ALB-sg
-  private-sg         = module.SECGRP.IALB-sg
+  public-sg          = module.SECGRP.ext-alb-sg
+  private-sg         = module.SECGRP.int-alb-sg
   pub-sub-1          = module.VPC.public_subnets-1
   pub-sub-2          = module.VPC.public_subnets-2
   priv-sub-1         = module.VPC.private_subnets-1

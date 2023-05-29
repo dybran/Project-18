@@ -21,38 +21,38 @@ We will be refactoring our codes to use __modules__ and move the __terraform.tfs
 
 __Modules__ serve as containers that allow to logically group Terraform codes for similar resources in the same domain (e.g., Compute, Networking, AMI, etc.). One __root module__ can call other child modules and insert their configurations when applying Terraform config. This concept makes the code structure neater, and it allows different team members to work on different parts of configuration at the same time.
 
-First we create a directory named  __narbyd-project__ which will be the __root-modules__ inside the __root-module__ we create a directory named __module__. 
+First we create a directory named  __narbyd-project__ which will be the __root-modules__ inside the __root-module__ we create a directory named __modules__. 
 
 `$ mkdir narbyd-project && cd narbyd-project`
 
-`$ mkdir module`
+`$ mkdir modules`
 
-Inside the  __module__ directory, we create the directories that will hold the diiferent resources eg vpc, autoscaling group, security group, RDS, EFS etc and also the __compute__ directory.
-
-![](./images/modulez.PNG)
+Inside the  __modules__ directory, we create the directories that will hold the diiferent resources eg __ALB, VPC, ASG, SECGRP, RDS, EFS__ and also the __compute__ directory.
 
 Copy the files containing the resources that was created in __PROJECT-17__ into each of the folders created as related to the resources.
 
-![](./images/1.PNG)
+In the __root-module__ create a file __main.tf__, __provider.tf__, __terraform.tfvars__, __vars.tf__ file.
 
-![](./images/22.PNG)
+__The refactored code can be found [here](https://github.com/dybran/Project-18/tree/main/narbyd-project).__
 
-In the __root-module__ create a file __main.tf__ and a __provider.tf__ file.
+Then run the commands
 
-![](./images/mp.PNG)
+`$ terraform init`
 
-In the __provider.tf__ paste the following code snippet
+`$ terraform validate`
 
-```
-provider "aws" {
-  region = var.region
-}
-```
-![](./images/prov.PNG)
+`$ terraform fmt`
 
-Next we will create a __vars.tf__ file in each folder in the __modules__
 
-![](./images/ras.PNG)
+![](./images/sf.PNG)
+![](./images/tev.PNG)
+![](./images/pl2.PNG)
+
+
+
+
+
+
 
 
 
