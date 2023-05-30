@@ -218,6 +218,11 @@ To use our new setup, we uncomment the backend configurations and run
 
 This configures terraform to use the backend.
 
-__N/B:__ To upload the __terraform.tfstate__ and the __lock__ file to the S3 bucket and dynomoDB table, we run `terraform init` after provisioning the other resources.
+__N/B:__ 
 
-We have successfully refactored the code to use __modules__, configured the __S3 bucket__ and the __DynamoDB__ to hold the __terraform.tfstate__ file and __lock__ files respectively.  
+- To upload the __terraform.tfstate__ and the __lock__ file to the S3 bucket and dynomoDB table, we run `terraform init` after provisioning the other resources.
+- Our application wont work because in our shell script that was passed to launch, some endpoints like the __RDS__ and __EFS__ access points are needed and they have not been created yet. We will employ the use of __Ansible__ and __Packer__ to fix this in [Project-19](https://github.com/dybran/Project-19/blob/main/Project-19.md).
+
+We have successfully refactored the code to use __modules__, configured the __S3 bucket__ and the __DynamoDB__ to hold the __terraform.tfstate__ file and __lock__ files respectively.
+
+- This project continues in [Project-19](https://github.com/dybran/Project-19/blob/main/Project-19.md).
